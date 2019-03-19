@@ -8,15 +8,12 @@ import org.springframework.data.repository.query.Param;
 
 public interface JsonDataRepository extends CrudRepository<JsonDataRecord, Long> {
 
-    //@Query("SELECT * FROM jsondata WHERE user_id=:userId")
-    //Iterable<JsonDataRecord> findByUserId(@Param("userId") Long userId);
+    Iterable<JsonDataRecord> findByUserAccount(@Param("userAccount") UserAccount userAccount);
 
-    Iterable<JsonDataRecord> findByUserAccount(UserAccount userAccount);
+    @Query("from JsonDataRecord e where e.userAccount = :userAccount and e.appId = :appId")
+    Iterable<JsonDataRecord> findByAppId(@Param("userAccount") UserAccount userAccount, @Param("appId") Integer appId);
 
-    //@Query("SELECT * FROM jsondata WHERE user_id=:userId AND app_id=:appId")
-    Iterable<JsonDataRecord> findByUserAccountAndAppId(UserAccount userAccount, Integer appId);
-
-    //@Query("SELECT * FROM jsondata WHERE user_id=:userId AND app_id=:appId AND data_type=:dataType")
-    Iterable<JsonDataRecord> findByUserAccountAndAppIdAndDataType(UserAccount userAccount, Integer appId, Integer dataType);
+    @Query("from JsonDataRecord e where e.userAccount = :userAccount and e.appId = :appId and dataType = :dataType")
+    Iterable<JsonDataRecord> findByDataType(@Param("userAccount") UserAccount userAccount, @Param("appId") Integer appId, @Param("dataType") Integer dataType);
 
 }

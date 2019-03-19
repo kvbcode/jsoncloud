@@ -49,11 +49,11 @@ public class JsonDataRecordController {
 
         UserAccount u = optUser.get();
 
-        return jsonDataDao.findByUserAccountAndAppId(u, appId);
+        return jsonDataDao.findByAppId(u, appId);
     }
 
     @ResponseBody
-    @GetMapping(value = "/{userId}/{appId}/{dataType]", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @GetMapping(value = "/{userId}/{appId}/{dataType}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public Iterable<JsonDataRecord> listRecordsByType(@PathVariable Long userId, @PathVariable Integer appId, @PathVariable Integer dataType){
 
         Optional<UserAccount> optUser = userDao.findById(userId);
@@ -62,7 +62,7 @@ public class JsonDataRecordController {
 
         UserAccount u = optUser.get();
 
-        return jsonDataDao.findByUserAccountAndAppIdAndDataType(u, appId, dataType);
+        return jsonDataDao.findByDataType(u, appId, dataType);
     }
 
 

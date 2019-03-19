@@ -1,6 +1,9 @@
 package com.cyber.spring.JsonCloud.entity;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -13,6 +16,7 @@ public class JsonDataRecord {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     Long id;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "USER_ID", nullable = false)
     UserAccount userAccount;
@@ -30,6 +34,11 @@ public class JsonDataRecord {
     String jsonData;
 
     public JsonDataRecord() {
+    }
+
+    @JsonGetter("user_id")
+    public Long getUserId(){
+        return userAccount.getId();
     }
 
     public Long getId() {
