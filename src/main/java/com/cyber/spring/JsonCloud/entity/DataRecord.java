@@ -2,38 +2,36 @@ package com.cyber.spring.JsonCloud.entity;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonValue;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "JSONDATA")
-public class JsonDataRecord {
+@Table(name = "data_records")
+public class DataRecord {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     Long id;
 
     @JsonIgnore
     @ManyToOne
-    @JoinColumn(name = "USER_ID", nullable = false)
+    @JoinColumn(name = "user_id", nullable = false)
     UserAccount userAccount;
 
-    @Column(name = "APP_ID")
+    @Column(name = "app_id")
     Integer appId = 0;
 
     @Column(nullable = false)
     LocalDateTime timestamp = LocalDateTime.now();
 
-    @Column(name = "DATA_TYPE")
+    @Column(name = "data_type")
     Integer dataType = 0;
 
     @Column(columnDefinition = "TEXT")
     String jsonData;
 
-    public JsonDataRecord() {
+    public DataRecord() {
     }
 
     @JsonGetter("user_id")
