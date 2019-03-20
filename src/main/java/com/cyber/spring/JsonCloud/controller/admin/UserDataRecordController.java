@@ -32,9 +32,7 @@ public class UserDataRecordController {
     @GetMapping(value = "/{userId}/data", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public Iterable<DataRecord> listRecordsbyUser(@PathVariable Long userId){
 
-        UserAccount u = userDao.findById(userId).orElseThrow(() -> {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "user not found");
-        });
+        UserAccount u = userDao.findById(userId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "user not found"));
 
         return jsonDataDao.findByUserAccount(u);
     }
@@ -43,9 +41,7 @@ public class UserDataRecordController {
     @GetMapping(value = "/{userId}/data/{appId}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public Iterable<DataRecord> listRecordsByApp(@PathVariable Long userId, @PathVariable Integer appId){
 
-        UserAccount u = userDao.findById(userId).orElseThrow(() -> {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "user not found");
-        });
+        UserAccount u = userDao.findById(userId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "user not found"));
 
         return jsonDataDao.findByAppId(u, appId);
     }
@@ -54,9 +50,7 @@ public class UserDataRecordController {
     @GetMapping(value = "/{userId}/data/{appId}/{dataType}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public Iterable<DataRecord> listRecordsByType(@PathVariable Long userId, @PathVariable Integer appId, @PathVariable Integer dataType){
 
-        UserAccount u = userDao.findById(userId).orElseThrow(() -> {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "user not found");
-        });
+        UserAccount u = userDao.findById(userId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "user not found"));
 
         return jsonDataDao.findByDataType(u, appId, dataType);
     }
@@ -66,9 +60,7 @@ public class UserDataRecordController {
     @PostMapping(value = "/{userId}/data/{appId}/{dataType}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public DataRecord add(@PathVariable Long userId, @PathVariable Integer appId, @PathVariable Integer dataType, @RequestBody String jsonDataStr){
 
-        UserAccount u = userDao.findById(userId).orElseThrow(() -> {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "user not found");
-        });
+        UserAccount u = userDao.findById(userId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "user not found"));
 
         DataRecord r = new DataRecord();
         r.setUserAccount( u );
@@ -83,9 +75,7 @@ public class UserDataRecordController {
     @PostMapping(value = "/data/{id}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public DataRecord set(@PathVariable Long id, @RequestBody String jsonDataStr){
 
-        DataRecord r = jsonDataDao.findById(id).orElseThrow(() -> {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "data not found");
-        });
+        DataRecord r = jsonDataDao.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "data not found"));
 
         r.setJsonData(jsonDataStr);
 
@@ -97,9 +87,7 @@ public class UserDataRecordController {
     @GetMapping(value = "/data/{id}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public DataRecord get(@PathVariable("id") Long id){
 
-        DataRecord r = jsonDataDao.findById(id).orElseThrow(() -> {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "data not found");
-        });
+        DataRecord r = jsonDataDao.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "data not found"));
 
         return r;
     }
@@ -107,9 +95,7 @@ public class UserDataRecordController {
     @DeleteMapping(value = "/data/{id}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public void del(@PathVariable("id") Long id){
 
-        DataRecord r = jsonDataDao.findById(id).orElseThrow(() -> {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "data not found");
-        });
+        DataRecord r = jsonDataDao.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "data not found"));
 
         jsonDataDao.delete( r );
     }

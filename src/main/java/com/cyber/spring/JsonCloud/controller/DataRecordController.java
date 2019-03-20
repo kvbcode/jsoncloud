@@ -77,9 +77,7 @@ public class DataRecordController {
     @PostMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public DataRecord set(HttpServletRequest request, @PathVariable Long id, @RequestBody String jsonDataStr){
 
-        DataRecord r = jsonDataDao.findById(id).orElseThrow(() -> {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "data not found");
-        });
+        DataRecord r = jsonDataDao.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "data not found"));
 
         UserAccount principal = userDao.findByLogin( request.getUserPrincipal().getName() );
         UserAccount entityUser = userDao.findById(r.getUserId()).get();
@@ -96,9 +94,7 @@ public class DataRecordController {
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public DataRecord get(HttpServletRequest request, @PathVariable("id") Long id){
 
-        DataRecord r = jsonDataDao.findById(id).orElseThrow(() -> {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "data not found");
-        });
+        DataRecord r = jsonDataDao.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "data not found"));
 
         UserAccount principal = userDao.findByLogin( request.getUserPrincipal().getName() );
         UserAccount entityUser = userDao.findById(r.getUserId()).get();
@@ -111,9 +107,7 @@ public class DataRecordController {
     @DeleteMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public void del(HttpServletRequest request, @PathVariable("id") Long id){
 
-        DataRecord r = jsonDataDao.findById(id).orElseThrow(() -> {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "data not found");
-        });
+        DataRecord r = jsonDataDao.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "data not found"));
 
         UserAccount principal = userDao.findByLogin( request.getUserPrincipal().getName() );
         UserAccount entityUser = userDao.findById(r.getUserId()).get();

@@ -47,9 +47,7 @@ public class UserAccountController {
     @PostMapping(value = "/{userId}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public UserAccount setUserDetails(@PathVariable Long userId, @RequestBody Map<String,String> request){
 
-        UserAccount u = userDao.findById(userId).orElseThrow(() -> {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "user not found");
-        });
+        UserAccount u = userDao.findById(userId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "user not found"));
 
         u.setLogin( request.getOrDefault("login", u.getLogin()));
         u.setFullName( request.getOrDefault("fullname", u.getFullName()));
@@ -68,9 +66,7 @@ public class UserAccountController {
     @GetMapping(value = "/{userId}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public UserAccount getUserDetails(@PathVariable Long userId){
 
-        UserAccount u = userDao.findById(userId).orElseThrow(() -> {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "user not found");
-        });
+        UserAccount u = userDao.findById(userId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "user not found"));
 
         return u;
     }
