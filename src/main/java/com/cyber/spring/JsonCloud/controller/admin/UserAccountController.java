@@ -1,4 +1,4 @@
-package com.cyber.spring.JsonCloud.controller;
+package com.cyber.spring.JsonCloud.controller.admin;
 
 import com.cyber.spring.JsonCloud.entity.Role;
 import com.cyber.spring.JsonCloud.entity.UserAccount;
@@ -12,11 +12,10 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Arrays;
 import java.util.Map;
-import java.util.Optional;
 
 @RestController
-@RequestMapping(value = "/user")
-public class UserController {
+@RequestMapping(value = "/admin/user")
+public class UserAccountController {
     @Autowired
     UserRepository userDao;
 
@@ -24,14 +23,14 @@ public class UserController {
     BCryptPasswordEncoder passwordEncoder;
 
     @ResponseBody
-    @RequestMapping(value = "/", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @GetMapping(value = "/", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public Iterable<UserAccount> listUsers(){
 
         return userDao.findAll();
     }
 
     @ResponseBody
-    @RequestMapping(value = "/", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PostMapping(value = "/", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public UserAccount addUser(@RequestBody Map<String,String> request){
 
         UserAccount userAccount = new UserAccount();
@@ -45,14 +44,13 @@ public class UserController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "/{id}", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public UserAccount setUserDetails(@PathVariable Long id, @RequestBody Map<String,String> request){
+    @PostMapping(value = "/{userId}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public UserAccount setUserDetails(@PathVariable Long userId, @RequestBody Map<String,String> request){
 
-        Optional<UserAccount> user = userDao.findById(id);
+        UserAccount u = userDao.findById(userId).orElseThrow(() -> {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "user not found");
+        });
 
-        if (!user.isPresent()) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "user not found");
-
-        UserAccount u = user.get();
         u.setLogin( request.getOrDefault("login", u.getLogin()));
         u.setFullName( request.getOrDefault("fullname", u.getFullName()));
 
@@ -67,17 +65,18 @@ public class UserController {
 
 
     @ResponseBody
-    @RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public UserAccount getUserDetails(@PathVariable("id") Long id){
-        Optional<UserAccount> user = userDao.findById(id);
+    @GetMapping(value = "/{userId}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public UserAccount getUserDetails(@PathVariable Long userId){
 
-        if (!user.isPresent()) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "user not found");
+        UserAccount u = userDao.findById(userId).orElseThrow(() -> {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "user not found");
+        });
 
-        return user.get();
+        return u;
     }
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public void delUser(@PathVariable("id") Long id){
+    @DeleteMapping(value = "/{userId}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public void delUser(@PathVariable Long id){
         userDao.deleteById(id);
     }
 
