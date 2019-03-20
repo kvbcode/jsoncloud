@@ -92,7 +92,7 @@ public class DataRecordController {
 
     @ResponseBody
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public DataRecord get(HttpServletRequest request, @PathVariable("id") Long id){
+    public String get(HttpServletRequest request, @PathVariable("id") Long id){
 
         DataRecord r = jsonDataDao.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "data not found"));
 
@@ -101,7 +101,7 @@ public class DataRecordController {
 
         if ( !principal.equals( entityUser ) ) throw new ResponseStatusException(HttpStatus.FORBIDDEN, "user mismatch");
 
-        return r;
+        return r.getJsonData();
     }
 
     @DeleteMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
