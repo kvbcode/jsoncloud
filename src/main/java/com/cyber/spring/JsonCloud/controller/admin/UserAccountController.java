@@ -72,8 +72,8 @@ public class UserAccountController {
     }
 
     @DeleteMapping(value = "/{userId}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public void delUser(@PathVariable Long id){
-        userDao.deleteById(id);
+    public void delUser(@PathVariable Long userId){
+        userDao.deleteById(userId);
     }
 
 }
