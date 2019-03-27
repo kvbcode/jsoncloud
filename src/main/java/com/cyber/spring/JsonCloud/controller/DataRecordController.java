@@ -30,6 +30,13 @@ public class DataRecordController {
     @Autowired
     JsonDataRepository jsonDataDao;
 
+    private String jsonResponse(Long id){
+        StringBuilder sb = new StringBuilder("{");
+        sb.append("\"id\":").append(id);
+        sb.append("}");
+        return sb.toString();
+    }
+
     @ResponseBody
     @GetMapping(value = "/", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public Iterable<DataRecord> listRecordsByUser(HttpServletRequest request){
@@ -60,7 +67,7 @@ public class DataRecordController {
 
     @ResponseBody
     @PostMapping(value = "/app/{appId}/{dataType}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public DataRecord add(HttpServletRequest request, @PathVariable Integer appId, @PathVariable Integer dataType, @RequestBody String jsonDataStr){
+    public String add(HttpServletRequest request, @PathVariable Integer appId, @PathVariable Integer dataType, @RequestBody String jsonDataStr){
 
         UserAccount u = userDao.findByLogin( request.getUserPrincipal().getName() );
 
@@ -70,14 +77,16 @@ public class DataRecordController {
         e.setDataType( dataType );
         e.setJsonData( jsonDataStr );
 
-        return jsonDataDao.save( e );
+        jsonDataDao.save( e );
+        return jsonResponse(e.getId());
     }
 
     @ResponseBody
     @PostMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public DataRecord set(HttpServletRequest request, @PathVariable Long id, @RequestBody String jsonDataStr){
+    public String set(HttpServletRequest request, @PathVariable Long id, @RequestBody String jsonDataStr){
 
-        DataRecord r = jsonDataDao.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "data not found"));
+        DataRecord r = jsonDataDao.findById(id).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "data not found"));
 
         UserAccount principal = userDao.findByLogin( request.getUserPrincipal().getName() );
         UserAccount entityUser = userDao.findById(r.getUserId()).get();
@@ -86,7 +95,8 @@ public class DataRecordController {
 
         r.setJsonData(jsonDataStr);
 
-        return jsonDataDao.save( r );
+        jsonDataDao.save( r );
+        return jsonResponse(r.getId());
     }
 
 
@@ -94,7 +104,8 @@ public class DataRecordController {
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public String get(HttpServletRequest request, @PathVariable("id") Long id){
 
-        DataRecord r = jsonDataDao.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "data not found"));
+        DataRecord r = jsonDataDao.findById(id).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "data not found"));
 
         UserAccount principal = userDao.findByLogin( request.getUserPrincipal().getName() );
         UserAccount entityUser = userDao.findById(r.getUserId()).get();
@@ -107,7 +118,8 @@ public class DataRecordController {
     @DeleteMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public void del(HttpServletRequest request, @PathVariable("id") Long id){
 
-        DataRecord r = jsonDataDao.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "data not found"));
+        DataRecord r = jsonDataDao.findById(id).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "data not found"));
 
         UserAccount principal = userDao.findByLogin( request.getUserPrincipal().getName() );
         UserAccount entityUser = userDao.findById(r.getUserId()).get();
