@@ -22,6 +22,13 @@ public class UserAccountController {
     @Autowired
     BCryptPasswordEncoder passwordEncoder;
 
+    private String jsonResponse(Long id){
+        StringBuilder sb = new StringBuilder("{");
+        sb.append("\"id\":").append(id);
+        sb.append("}");
+        return sb.toString();
+    }
+
     @ResponseBody
     @GetMapping(value = "/", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public Iterable<UserAccount> listUsers(){
@@ -31,34 +38,31 @@ public class UserAccountController {
 
     @ResponseBody
     @PostMapping(value = "/", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public UserAccount addUser(@RequestBody Map<String,String> request){
+    public String addUser(@RequestBody UserAccount userAccount){
 
-        UserAccount userAccount = new UserAccount();
-        userAccount.setLogin( request.get("login") );
-        userAccount.setFullName( request.getOrDefault("fullname", "") );
-        userAccount.setPassword( passwordEncoder.encode( request.getOrDefault("password", "") ) );
-        userAccount.setActiveStatus(1);
-        userAccount.setRoles( Arrays.asList(new Role("ROLE_USER") ) );
-
-        return userDao.save(userAccount);
+        userAccount.setPassword( passwordEncoder.encode( userAccount.getPassword() ) );
+        userDao.save(userAccount);
+        return jsonResponse(userAccount.getId());
     }
 
     @ResponseBody
     @PostMapping(value = "/{userId}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public UserAccount setUserDetails(@PathVariable Long userId, @RequestBody Map<String,String> request){
+    public String setUserDetails(@PathVariable Long userId, @RequestBody UserAccount userRequestData){
 
         UserAccount u = userDao.findById(userId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "user not found"));
 
-        u.setLogin( request.getOrDefault("login", u.getLogin()));
-        u.setFullName( request.getOrDefault("fullname", u.getFullName()));
+        u.setLogin( userRequestData.getLogin() );
+        u.setFullName( userRequestData.getFullName() );
+        u.setStatus( userRequestData.getStatus() );
+        u.setRoles( userRequestData.getRoles() );
 
-        String rawPassword = request.getOrDefault("password", "");
-        if (!rawPassword.isEmpty()) {
-            u.setPassword( passwordEncoder.encode( rawPassword ) );
+        String password = userRequestData.getPassword();
+        if (password!=null && !password.isEmpty()) {
+            u.setPassword( passwordEncoder.encode( password ) );
         }
 
         userDao.save(u);
-        return u;
+        return jsonResponse(u.getId());
     }
 
 

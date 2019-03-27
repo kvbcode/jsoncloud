@@ -36,7 +36,7 @@ public class JsonCloudApplication {
 			acc.setFullName("Admin");
 			acc.setPassword(passwordEncoder.encode("admin"));
 			acc.setRoles(Arrays.asList(new Role("ROLE_USER"), new Role("ROLE_ADMIN")));
-			acc.setActiveStatus(1);
+			acc.setStatus(1);
 
 			userRepository.save(acc);
 		}

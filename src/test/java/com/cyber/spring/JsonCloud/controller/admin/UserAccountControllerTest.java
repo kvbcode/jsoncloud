@@ -76,7 +76,6 @@ public class UserAccountControllerTest {
                 .andDo(print())
                 .andExpect( status().isOk() )
                 .andExpect( content().contentType(APPLICATION_JSON_UTF8) )
-                .andExpect( jsonPath("$.login", is("user1") ) )
                 .andExpect( jsonPath("$.id", greaterThan(0) ) )
                 .andReturn();
     }
@@ -95,7 +94,6 @@ public class UserAccountControllerTest {
                 .andDo(print())
                 .andExpect( status().isOk() )
                 .andExpect( content().contentType(APPLICATION_JSON_UTF8) )
-                .andExpect( jsonPath("$.login", is("user2") ) )
                 .andExpect( jsonPath("$.id", greaterThan(0) ) )
                 .andReturn();
 
@@ -153,13 +151,12 @@ public class UserAccountControllerTest {
                 .andDo(print())
                 .andExpect( status().isOk() )
                 .andExpect( content().contentType(APPLICATION_JSON_UTF8) )
-                .andExpect( jsonPath("$.login", is("user4") ) )
                 .andExpect( jsonPath("$.id", greaterThan(0) ) )
                 .andReturn();
 
         Long userId = Long.valueOf( JsonPath.parse(res1.getResponse().getContentAsString()).read("$.id").toString() );
 
-        // get user4
+        // set user4
         MockHttpServletRequestBuilder req2 = MockMvcRequestBuilders.post( url + "/" + userId )
                 .principal( admin )
                 .contentType(APPLICATION_JSON_UTF8)
@@ -169,9 +166,7 @@ public class UserAccountControllerTest {
                 .andDo(print())
                 .andExpect( status().isOk() )
                 .andExpect( content().contentType(APPLICATION_JSON_UTF8) )
-                .andExpect( jsonPath("$.login", is("user4") ) )
                 .andExpect( jsonPath("$.id", is(userId.intValue()) ) )
-                .andExpect( jsonPath("$.fullName", is("FullNameData") ) )
                 .andReturn();
     }
 

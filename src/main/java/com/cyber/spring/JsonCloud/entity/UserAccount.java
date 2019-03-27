@@ -2,6 +2,8 @@ package com.cyber.spring.JsonCloud.entity;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonSetter;
 
 import javax.persistence.*;
 import java.util.Collection;
@@ -14,16 +16,19 @@ public class UserAccount {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @JsonProperty("id")
     private Long id;
 
     @Column(name="login", length = 128, nullable = false, unique = true)
+    @JsonProperty("login")
     private String login;
 
     @Column(name="fullname", nullable = false)
+    @JsonProperty("fullname")
     private String fullName = "";
 
-    @JsonIgnore
     @Column(name="password", nullable = false)
+    @JsonProperty(value = "password", access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
     @JsonIgnore
@@ -35,22 +40,33 @@ public class UserAccount {
     private Collection<Role> roles;
 
     @Column(name = "active_status", nullable = false)
-    private Integer activeStatus = 0;
+    @JsonProperty("status")
+    private Integer status = 0;
 
     public UserAccount() {
 
     }
 
     @JsonGetter("roles")
-    public Collection<String> getRolesString(){
+    public Collection<String> getJsonRoles(){
         return getRoles().stream()
                 .map(e -> e.getName())
                 .collect(Collectors.toList());
     }
 
+    @JsonSetter("roles")
+    public void setRoles(Collection<Role> roles) {
+        this.roles = roles;
+    }
+
+    @JsonSetter("password")
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
     @Override
     public int hashCode() {
-        return Objects.hash(id, login, fullName, password, activeStatus);
+        return Objects.hash(id, login, fullName, password, status);
     }
 
     @Override
@@ -65,7 +81,7 @@ public class UserAccount {
                 u.getLogin().equals(getLogin()) &&
                 u.getFullName().equals(getFullName()) &&
                 u.getPassword().equals(getPassword()) &&
-                u.getActiveStatus().equals(getActiveStatus());
+                u.getStatus().equals(getStatus());
     }
 
     public Long getId() {
@@ -96,23 +112,15 @@ public class UserAccount {
         return password;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
     public Collection<Role> getRoles() {
         return roles;
     }
 
-    public void setRoles(Collection<Role> roles) {
-        this.roles = roles;
+    public Integer getStatus() {
+        return status;
     }
 
-    public Integer getActiveStatus() {
-        return activeStatus;
-    }
-
-    public void setActiveStatus(Integer activeStatus) {
-        this.activeStatus = activeStatus;
+    public void setStatus(Integer status) {
+        this.status = status;
     }
 }
