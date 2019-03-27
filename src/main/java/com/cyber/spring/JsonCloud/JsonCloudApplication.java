@@ -2,6 +2,7 @@ package com.cyber.spring.JsonCloud;
 
 import com.cyber.spring.JsonCloud.entity.Role;
 import com.cyber.spring.JsonCloud.entity.UserAccount;
+import com.cyber.spring.JsonCloud.repository.RoleRepository;
 import com.cyber.spring.JsonCloud.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -20,6 +21,8 @@ public class JsonCloudApplication {
 	@Autowired
 	private UserRepository userRepository;
 
+	@Autowired
+	private RoleRepository roleRepository;
 
 	public static void main(String[] args) {
 		SpringApplication.run(JsonCloudApplication.class, args);

@@ -2,6 +2,7 @@ package com.cyber.spring.JsonCloud.controller.admin;
 
 import com.cyber.spring.JsonCloud.entity.Role;
 import com.cyber.spring.JsonCloud.entity.UserAccount;
+import com.cyber.spring.JsonCloud.repository.RoleRepository;
 import com.cyber.spring.JsonCloud.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -10,14 +11,18 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.Arrays;
-import java.util.Map;
+import java.util.Collection;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(value = "/admin/user")
 public class UserAccountController {
+
     @Autowired
     UserRepository userDao;
+
+    @Autowired
+    RoleRepository roleDao;
 
     @Autowired
     BCryptPasswordEncoder passwordEncoder;
@@ -27,6 +32,15 @@ public class UserAccountController {
         sb.append("\"id\":").append(id);
         sb.append("}");
         return sb.toString();
+    }
+
+    private Collection<Role> findRoles(Collection<Role> newRoles){
+        return newRoles.stream()
+                .map( newRole -> {
+                    Role r = roleDao.findByName(newRole.getName());
+                    if (r==null) return newRole;
+                    return r;
+                }).collect( Collectors.toList());
     }
 
     @ResponseBody
@@ -41,6 +55,8 @@ public class UserAccountController {
     public String addUser(@RequestBody UserAccount userAccount){
 
         userAccount.setPassword( passwordEncoder.encode( userAccount.getPassword() ) );
+        userAccount.setRoles( findRoles(userAccount.getRoles()) );
+
         userDao.save(userAccount);
         return jsonResponse(userAccount.getId());
     }
@@ -54,7 +70,8 @@ public class UserAccountController {
         u.setLogin( userRequestData.getLogin() );
         u.setFullName( userRequestData.getFullName() );
         u.setStatus( userRequestData.getStatus() );
-        u.setRoles( userRequestData.getRoles() );
+
+        u.setRoles( findRoles(userRequestData.getRoles()) );
 
         String password = userRequestData.getPassword();
         if (password!=null && !password.isEmpty()) {

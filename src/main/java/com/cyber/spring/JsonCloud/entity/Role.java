@@ -1,30 +1,35 @@
 package com.cyber.spring.JsonCloud.entity;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import com.cyber.spring.JsonCloud.repository.RoleRepository;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import jdk.nashorn.internal.ir.annotations.Ignore;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
+@Table(name="roles")
 public class Role {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    @Column(unique = true)
     private String name;
 
     public Role() {
     }
 
     public Role(String name) {
-        this.name = name;
+        setName(name);
     }
 
     @Override
     public String toString() {
-        return "Role(" + name + ")";
+        return "Role(" + id + ":" + name + ")";
     }
 
     @Override
@@ -54,6 +59,8 @@ public class Role {
     }
 
     public void setName(String name) {
+        name = name.toUpperCase();
+        if (!name.startsWith("ROLE_")) name = "ROLE_" + name;
         this.name = name;
     }
 }
