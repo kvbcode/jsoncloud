@@ -16,13 +16,7 @@ import java.util.Arrays;
 public class JsonCloudApplication {
 
 	@Autowired
-	private BCryptPasswordEncoder passwordEncoder;
-
-	@Autowired
 	private UserRepository userRepository;
-
-	@Autowired
-	private RoleRepository roleRepository;
 
 	public static void main(String[] args) {
 		SpringApplication.run(JsonCloudApplication.class, args);
@@ -31,18 +25,16 @@ public class JsonCloudApplication {
 
 	@PostConstruct
 	public void init(){
-		UserAccount admin = userRepository.findByLogin("admin");
-
-		if (admin==null) {
+		UserAccount admin = userRepository.findByLogin("admin").orElseGet(() -> {
 			UserAccount acc = new UserAccount();
 			acc.setLogin("admin");
 			acc.setFullName("Admin");
-			acc.setPassword(passwordEncoder.encode("admin"));
+			acc.setPassword("admin");
 			acc.setRoles(Arrays.asList(new Role("ROLE_USER"), new Role("ROLE_ADMIN")));
 			acc.setStatus(1);
 
-			userRepository.save(acc);
-		}
+			return userRepository.save(acc);
+		});
 
 	}
 

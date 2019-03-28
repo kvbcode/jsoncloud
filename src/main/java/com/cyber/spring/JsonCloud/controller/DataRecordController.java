@@ -41,7 +41,7 @@ public class DataRecordController {
     @GetMapping(value = "/", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public Iterable<DataRecord> listRecordsByUser(HttpServletRequest request){
 
-        UserAccount u = userDao.findByLogin( request.getUserPrincipal().getName() );
+        UserAccount u = userDao.findByLogin( request.getUserPrincipal().getName() ).get();
 
         return jsonDataDao.findByUserAccount(u);
     }
@@ -50,7 +50,7 @@ public class DataRecordController {
     @GetMapping(value = "/app/{appId}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public Iterable<DataRecord> listRecordsByApp(HttpServletRequest request, @PathVariable Integer appId){
 
-        UserAccount u = userDao.findByLogin( request.getUserPrincipal().getName() );
+        UserAccount u = userDao.findByLogin( request.getUserPrincipal().getName() ).get();
 
         return jsonDataDao.findByAppId(u, appId);
     }
@@ -59,7 +59,7 @@ public class DataRecordController {
     @GetMapping(value = "/app/{appId}/{dataType}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public Iterable<DataRecord> listRecordsByType(HttpServletRequest request, @PathVariable Integer appId, @PathVariable Integer dataType){
 
-        UserAccount u = userDao.findByLogin( request.getUserPrincipal().getName() );
+        UserAccount u = userDao.findByLogin( request.getUserPrincipal().getName() ).get();
 
         return jsonDataDao.findByDataType(u, appId, dataType);
     }
@@ -69,7 +69,7 @@ public class DataRecordController {
     @PostMapping(value = "/app/{appId}/{dataType}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public String add(HttpServletRequest request, @PathVariable Integer appId, @PathVariable Integer dataType, @RequestBody String jsonDataStr){
 
-        UserAccount u = userDao.findByLogin( request.getUserPrincipal().getName() );
+        UserAccount u = userDao.findByLogin( request.getUserPrincipal().getName() ).get();
 
         DataRecord e = new DataRecord();
         e.setUserAccount( u );
@@ -88,7 +88,7 @@ public class DataRecordController {
         DataRecord r = jsonDataDao.findById(id).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "data not found"));
 
-        UserAccount principal = userDao.findByLogin( request.getUserPrincipal().getName() );
+        UserAccount principal = userDao.findByLogin( request.getUserPrincipal().getName() ).get();
         UserAccount entityUser = userDao.findById(r.getUserId()).get();
 
         if ( !principal.equals( entityUser )) throw new ResponseStatusException(HttpStatus.FORBIDDEN, "user mismatch");
@@ -107,7 +107,7 @@ public class DataRecordController {
         DataRecord r = jsonDataDao.findById(id).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "data not found"));
 
-        UserAccount principal = userDao.findByLogin( request.getUserPrincipal().getName() );
+        UserAccount principal = userDao.findByLogin( request.getUserPrincipal().getName() ).get();
         UserAccount entityUser = userDao.findById(r.getUserId()).get();
 
         if ( !principal.equals( entityUser ) ) throw new ResponseStatusException(HttpStatus.FORBIDDEN, "user mismatch");
@@ -121,7 +121,7 @@ public class DataRecordController {
         DataRecord r = jsonDataDao.findById(id).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "data not found"));
 
-        UserAccount principal = userDao.findByLogin( request.getUserPrincipal().getName() );
+        UserAccount principal = userDao.findByLogin( request.getUserPrincipal().getName() ).get();
         UserAccount entityUser = userDao.findById(r.getUserId()).get();
 
         if ( !principal.equals( entityUser ) ) throw new ResponseStatusException(HttpStatus.FORBIDDEN, "user mismatch");

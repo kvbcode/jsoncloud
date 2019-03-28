@@ -1,46 +1,26 @@
 package com.cyber.spring.JsonCloud.controller.admin;
 
-import com.cyber.spring.JsonCloud.entity.Role;
 import com.cyber.spring.JsonCloud.entity.UserAccount;
-import com.cyber.spring.JsonCloud.repository.RoleRepository;
-import com.cyber.spring.JsonCloud.repository.UserRepository;
+import com.cyber.spring.JsonCloud.service.UserAccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.Collection;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(value = "/admin/user")
 public class UserAccountController {
 
     @Autowired
-    UserRepository userDao;
-
-    @Autowired
-    RoleRepository roleDao;
-
-    @Autowired
-    BCryptPasswordEncoder passwordEncoder;
+    UserAccountService userDao;
 
     private String jsonResponse(Long id){
         StringBuilder sb = new StringBuilder("{");
         sb.append("\"id\":").append(id);
         sb.append("}");
         return sb.toString();
-    }
-
-    private Collection<Role> findRoles(Collection<Role> newRoles){
-        return newRoles.stream()
-                .map( newRole -> {
-                    Role r = roleDao.findByName(newRole.getName());
-                    if (r==null) return newRole;
-                    return r;
-                }).collect( Collectors.toList());
     }
 
     @ResponseBody
@@ -54,9 +34,6 @@ public class UserAccountController {
     @PostMapping(value = "/", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public String addUser(@RequestBody UserAccount userAccount){
 
-        userAccount.setPassword( passwordEncoder.encode( userAccount.getPassword() ) );
-        userAccount.setRoles( findRoles(userAccount.getRoles()) );
-
         userDao.save(userAccount);
         return jsonResponse(userAccount.getId());
     }
@@ -65,18 +42,16 @@ public class UserAccountController {
     @PostMapping(value = "/{userId}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public String setUserDetails(@PathVariable Long userId, @RequestBody UserAccount userRequestData){
 
-        UserAccount u = userDao.findById(userId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "user not found"));
+        UserAccount u = userDao.findById(userId).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "user not found"));
 
         u.setLogin( userRequestData.getLogin() );
         u.setFullName( userRequestData.getFullName() );
         u.setStatus( userRequestData.getStatus() );
-
-        u.setRoles( findRoles(userRequestData.getRoles()) );
+        u.setRoles( userRequestData.getRoles() );
 
         String password = userRequestData.getPassword();
-        if (password!=null && !password.isEmpty()) {
-            u.setPassword( passwordEncoder.encode( password ) );
-        }
+        if (password!=null && !password.isEmpty()) u.setPassword( password );
 
         userDao.save(u);
         return jsonResponse(u.getId());
@@ -87,7 +62,8 @@ public class UserAccountController {
     @GetMapping(value = "/{userId}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public UserAccount getUserDetails(@PathVariable Long userId){
 
-        UserAccount u = userDao.findById(userId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "user not found"));
+        UserAccount u = userDao.findById(userId).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "user not found"));
 
         return u;
     }
