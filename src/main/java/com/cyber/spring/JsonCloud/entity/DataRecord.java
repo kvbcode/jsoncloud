@@ -2,9 +2,11 @@ package com.cyber.spring.JsonCloud.entity;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
+import java.util.Date;
 
 @Entity
 @Table(name = "data_records")
@@ -20,15 +22,20 @@ public class DataRecord {
     UserAccount userAccount;
 
     @Column(name = "app_id")
+    @JsonProperty("app_id")
     Integer appId = 0;
 
+    @UpdateTimestamp
     @Column(nullable = false)
-    LocalDateTime timestamp = LocalDateTime.now();
+    @JsonProperty("modified")
+    Date modified = new Date();
 
     @Column(name = "data_type")
+    @JsonProperty("data_type")
     Integer dataType = 0;
 
     @Column(columnDefinition = "TEXT")
+    @JsonProperty("json_data")
     String jsonData;
 
     public DataRecord() {
@@ -63,12 +70,12 @@ public class DataRecord {
         this.appId = appId;
     }
 
-    public LocalDateTime getTimestamp() {
-        return timestamp;
+    public Date getModified() {
+        return modified;
     }
 
-    public void setTimestamp(LocalDateTime timestamp) {
-        this.timestamp = timestamp;
+    public void setModified(Date modified) {
+        this.modified = modified;
     }
 
     public Integer getDataType() {
